@@ -1,0 +1,76 @@
+[project]
+name = "ytdlp-gui"
+version = "0.1.0"
+description = "Simple native desktop downloader built on yt-dlp."
+readme = "README.md"
+requires-python = ">=3.13"
+license = "MIT"
+dependencies = [
+    "yt-dlp[default]>=2026.10.26",
+    # Static ffmpeg binary, needed to merge best-video + best-audio streams.
+    "imageio-ffmpeg>=0.7.0",
+    # JavaScript runtime yt-dlp needs to solve YouTube's player challenges.
+    "deno>=2.5",
+    "toga-cocoa>=0.5.7; sys_platform == 'darwin'",
+    "toga-gtk>=0.5.7; sys_platform == 'linux'",
+    "toga-winforms>=0.5.7; sys_platform == 'win32'",
+]
+
+[project.gui-scripts]
+ytdlp-gui = "ytdlp_gui.app:run"
+
+[dependency-groups]
+dev = ["briefcase>=0.4.7"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ytdlp_gui"]
+
+[tool.briefcase]
+project_name = "ytdlp-gui"
+bundle = "com.frederickrodrigues"
+version = "0.1.0"
+url = "https://github.com/fred-dev/yp-dlp-gui"
+author = "Frederick Rodrigues"
+author_email = ""
+
+[tool.briefcase.app.ytdlp_gui]
+formal_name = "YT-DLP GUI"
+description = "Download videos at the highest quality with yt-dlp"
+sources = ["src/ytdlp_gui"]
+requires = [
+    "yt-dlp[default]>=2026.10.26",
+    "imageio-ffmpeg>=0.7.0",
+    "deno>=2.5",
+]
+
+[tool.briefcase.app.ytdlp_gui.macOS]
+requires = ["toga-cocoa>=0.5.7", "std-nslog>=1.0.3"]
+# One .app that runs natively on both Apple Silicon (arm64) and Intel (x86_64).
+universal_build = true
+
+[tool.briefcase.app.ytdlp_gui.linux]
+requires = ["toga-gtk>=0.5.7"]
+
+[tool.briefcase.app.ytdlp_gui.linux.system.debian]
+system_requires = ["libgirepository-2.0-dev", "libcairo2-dev", "libpango1.0-dev", "libwebkit2gtk-4.1-0", "gir1.2-gtk-3.0"]
+system_runtime_requires = ["gir1.2-gtk-3.0", "libgirepository-1.0-1", "libcanberra-gtk3-module"]
+
+[tool.briefcase.app.ytdlp_gui.linux.system.rhel]
+system_requires = ["gobject-introspection-devel", "cairo-gobject-devel", "gtk3"]
+system_runtime_requires = ["gobject-introspection", "gtk3", "libcanberra-gtk3"]
+
+[tool.briefcase.app.ytdlp_gui.linux.system.arch]
+system_requires = ["cairo", "gobject-introspection", "gtk3"]
+system_runtime_requires = ["gtk3", "gobject-introspection-runtime", "libcanberra"]
+
+[tool.briefcase.app.ytdlp_gui.linux.flatpak]
+flatpak_runtime = "org.gnome.Platform"
+flatpak_runtime_version = "48"
+flatpak_sdk = "org.gnome.Sdk"
+
+[tool.briefcase.app.ytdlp_gui.windows]
+requires = ["toga-winforms>=0.5.7"]
